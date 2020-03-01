@@ -5,6 +5,11 @@ from flask import Flask, render_template, session, request, \
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 
+import pprint
+import json
+from tatsu import parse
+import tatsu
+from tatsu.util import asjson
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
 # the best option based on installed packages.
@@ -15,6 +20,35 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
+
+
+def valid_expression(expression):
+    try:
+        grammar = open('grammars/calc.ebnf').read()
+        parser = tatsu.compile(grammar)
+        return True
+    except:
+        return False
+
+def store_results(data):
+    import redis
+    import json
+    r = redis.StrictRedis()
+    r.execute_command('JSON.SET', 'doc', '.', json.dumps(data))
+    #reply = json.loads(r.execute_command('JSON.GET', 'doc'))
+
+
+def parse_expression(expression):
+    if valid_expression(expression):
+        grammar = open('grammars/calc.ebnf').read()
+        parser = tatsu.compile(grammar)
+        ast = parser.parse(expression)
+        print('# PPRINT')
+        pprint.pprint(ast, indent=2, width=20)
+        print()
+        data = json.dumps(asjson(ast), indent=2)
+        store_results(data)
+        return data
 
 
 def background_thread():
@@ -35,9 +69,10 @@ def index():
 
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
+    data = parse_expression(message['data']) 
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
-         {'data': message['data'], 'count': session['receive_count']})
+         {'data': data, 'count': session['receive_count']})
 
 
 @socketio.on('my_broadcast_event', namespace='/test')
