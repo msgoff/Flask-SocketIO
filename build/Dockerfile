@@ -19,7 +19,7 @@ RUN service redis-server stop
 RUN cd /opt/
 RUN git clone https://github.com/RedisJSON/RedisJSON.git
 RUN cd /opt/RedisJSON && make
-RUN redis-server --loadmodule src/rejson.so &
+RUN redis-server --loadmodule src/rejson.so bind 0.0.0.0 &
 RUN cd /opt/
 RUN git clone https://github.com/msgoff/Flask-Socketio
 RUN cd Flask-Socketio
@@ -27,7 +27,7 @@ RUN pip3 install redis
 RUN pip3 install tatsu
 WORKDIR /opt/Flask-Socketio/example/
 RUN pip3 install -r requirements.txt
-
+RUN pip3 install gevent
 
 # An ENTRYPOINT allows you to configure a container that will run as an executable.
 ENTRYPOINT ["python3"]

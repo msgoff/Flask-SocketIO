@@ -509,7 +509,7 @@ class SocketIO(object):
                        case.
         """
         if host is None:
-            host = '0.0.0.0'
+            host = '127.0.0.1'
         if port is None:
             server_name = app.config['SERVER_NAME']
             if server_name and ':' in server_name:
