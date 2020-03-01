@@ -25,4 +25,15 @@ RUN git clone https://github.com/msgoff/Flask-Socketio
 RUN cd Flask-Socketio
 RUN pip3 install redis
 RUN pip3 install tatsu
+WORKDIR /opt/Flask-Socketio/example/
+RUN pip3 install -r requirements.txt
+
+
+# An ENTRYPOINT allows you to configure a container that will run as an executable.
+ENTRYPOINT ["python3"]
+
+# There can only be one CMD instruction in a Dockerfile
+# The CMD instruction should be used to run the software contained by your image, along with any arguments. 
+CMD ["app.py"]
+
 
