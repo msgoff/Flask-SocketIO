@@ -34,6 +34,6 @@ ENTRYPOINT ["python3"]
 
 # There can only be one CMD instruction in a Dockerfile
 # The CMD instruction should be used to run the software contained by your image, along with any arguments. 
-CMD ["app.py"]
+CMD ["app.py","host=0.0.0.0"]
 
 
