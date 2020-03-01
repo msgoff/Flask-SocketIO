@@ -11,18 +11,18 @@ RUN apt-get update && \
     make \
     graphviz \
     python3-dev \
-    python-dev 
+    python-dev \
+    python3-pip 
 
 WORKDIR /opt/
 RUN service redis-server stop
+RUN cd /opt/
 RUN git clone https://github.com/RedisJSON/RedisJSON.git
-RUN cd RedisJSON
-RUN make
+RUN cd /opt/RedisJSON && make
 RUN redis-server --loadmodule src/rejson.so &
 RUN cd /opt/
 RUN git clone https://github.com/msgoff/Flask-Socketio
 RUN cd Flask-Socketio
 RUN pip3 install redis
-RUN pip3 install tatus
+RUN pip3 install tatsu
 
-WORKDIR /opt/
