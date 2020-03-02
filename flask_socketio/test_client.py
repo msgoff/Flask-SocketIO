@@ -23,30 +23,46 @@ class SocketIOTestClient(object):
                               cookies set in HTTP routes accessible from
                               Socket.IO events.
     """
+
     queue = {}
     acks = {}
 
-    def __init__(self, app, socketio, namespace=None, query_string=None,
-                 headers=None, flask_test_client=None):
+    def __init__(
+        self,
+        app,
+        socketio,
+        namespace=None,
+        query_string=None,
+        headers=None,
+        flask_test_client=None,
+    ):
         def _mock_send_packet(sid, pkt):
-            if pkt.packet_type == packet.EVENT or \
-                    pkt.packet_type == packet.BINARY_EVENT:
+            if (
+                pkt.packet_type == packet.EVENT
+                or pkt.packet_type == packet.BINARY_EVENT
+            ):
                 if sid not in self.queue:
                     self.queue[sid] = []
-                if pkt.data[0] == 'message' or pkt.data[0] == 'json':
-                    self.queue[sid].append({'name': pkt.data[0],
-                                            'args': pkt.data[1],
-                                            'namespace': pkt.namespace or '/'})
+                if pkt.data[0] == "message" or pkt.data[0] == "json":
+                    self.queue[sid].append(
+                        {
+                            "name": pkt.data[0],
+                            "args": pkt.data[1],
+                            "namespace": pkt.namespace or "/",
+                        }
+                    )
                 else:
-                    self.queue[sid].append({'name': pkt.data[0],
-                                            'args': pkt.data[1:],
-                                            'namespace': pkt.namespace or '/'})
-            elif pkt.packet_type == packet.ACK or \
-                    pkt.packet_type == packet.BINARY_ACK:
-                self.acks[sid] = {'args': pkt.data,
-                                  'namespace': pkt.namespace or '/'}
+                    self.queue[sid].append(
+                        {
+                            "name": pkt.data[0],
+                            "args": pkt.data[1:],
+                            "namespace": pkt.namespace or "/",
+                        }
+                    )
+            elif pkt.packet_type == packet.ACK or pkt.packet_type == packet.BINARY_ACK:
+                self.acks[sid] = {"args": pkt.data, "namespace": pkt.namespace or "/"}
             elif pkt.packet_type in [packet.DISCONNECT, packet.ERROR]:
-                self.connected[pkt.namespace or '/'] = False
+                self.connected[pkt.namespace or "/"] = False
 
         self.app = app
         self.flask_test_client = flask_test_client
@@ -58,15 +74,16 @@ class SocketIOTestClient(object):
         self.connected = {}
         socketio.server._send_packet = _mock_send_packet
         socketio.server.environ[self.sid] = {}
-        socketio.server.async_handlers = False      # easier to test when
+        socketio.server.async_handlers = False  # easier to test when
         socketio.server.eio.async_handlers = False  # events are sync
         if isinstance(socketio.server.manager, PubSubManager):
-            raise RuntimeError('Test client cannot be used with a message '
-                               'queue. Disable the queue on your test '
-                               'configuration.')
+            raise RuntimeError(
+                "Test client cannot be used with a message "
+                "queue. Disable the queue on your test "
+                "configuration."
+            )
         socketio.server.manager.initialize()
-        self.connect(namespace=namespace, query_string=query_string,
-                     headers=headers)
+        self.connect(namespace=namespace, query_string=query_string, headers=headers)
 
     def is_connected(self, namespace=None):
         """Check if a namespace is connected.
@@ -74,7 +91,7 @@ class SocketIOTestClient(object):
         :param namespace: The namespace to check. The global namespace is
                          assumed if this argument is not provided.
         """
-        return self.connected.get(namespace or '/', False)
+        return self.connected.get(namespace or "/", False)
 
     def connect(self, namespace=None, query_string=None, headers=None):
         """Connect the client.
@@ -90,24 +107,23 @@ class SocketIOTestClient(object):
         this class is created. An example where it this method would be useful
         is when the application accepts multiple namespace connections.
         """
-        url = '/socket.io'
+        url = "/socket.io"
         if query_string:
-            if query_string[0] != '?':
-                query_string = '?' + query_string
+            if query_string[0] != "?":
+                query_string = "?" + query_string
             url += query_string
         environ = EnvironBuilder(url, headers=headers).get_environ()
-        environ['flask.app'] = self.app
+        environ["flask.app"] = self.app
         if self.flask_test_client:
             # inject cookies from Flask
             self.flask_test_client.cookie_jar.inject_wsgi(environ)
-        self.connected['/'] = True
+        self.connected["/"] = True
         self.socketio.server._handle_eio_connect(self.sid, environ)
-        if namespace is not None and namespace != '/':
+        if namespace is not None and namespace != "/":
             self.connected[namespace] = True
             pkt = packet.Packet(packet.CONNECT, namespace=namespace)
             with self.app.app_context():
-                self.socketio.server._handle_eio_message(self.sid,
-                                                         pkt.encode())
+                self.socketio.server._handle_eio_message(self.sid, pkt.encode())
 
     def disconnect(self, namespace=None):
         """Disconnect the client.
@@ -116,11 +132,11 @@ class SocketIOTestClient(object):
                          assumed if this argument is not provided.
         """
         if not self.is_connected(namespace):
-            raise RuntimeError('not connected')
+            raise RuntimeError("not connected")
         pkt = packet.Packet(packet.DISCONNECT, namespace=namespace)
         with self.app.app_context():
             self.socketio.server._handle_eio_message(self.sid, pkt.encode())
-        del self.connected[namespace or '/']
+        del self.connected[namespace or "/"]
 
     def emit(self, event, *args, **kwargs):
         """Emit an event to the server.
@@ -137,16 +153,17 @@ class SocketIOTestClient(object):
         :param namespace: The namespace of the event. The global namespace is
                           assumed if this argument is not provided.
         """
-        namespace = kwargs.pop('namespace', None)
+        namespace = kwargs.pop("namespace", None)
         if not self.is_connected(namespace):
-            raise RuntimeError('not connected')
-        callback = kwargs.pop('callback', False)
+            raise RuntimeError("not connected")
+        callback = kwargs.pop("callback", False)
         id = None
         if callback:
             self.callback_counter += 1
             id = self.callback_counter
-        pkt = packet.Packet(packet.EVENT, data=[event] + list(args),
-                            namespace=namespace, id=id)
+        pkt = packet.Packet(
+            packet.EVENT, data=[event] + list(args), namespace=namespace, id=id
+        )
         with self.app.app_context():
             encoded_pkt = pkt.encode()
             if isinstance(encoded_pkt, list):
@@ -156,8 +173,7 @@ class SocketIOTestClient(object):
                 self.socketio.server._handle_eio_message(self.sid, encoded_pkt)
         ack = self.acks.pop(self.sid, None)
         if ack is not None:
-            return ack['args'][0] if len(ack['args']) == 1 \
-                else ack['args']
+            return ack["args"][0] if len(ack["args"]) == 1 else ack["args"]
 
     def send(self, data, json=False, callback=False, namespace=None):
         """Send a text or JSON message to the server.
@@ -176,9 +192,9 @@ class SocketIOTestClient(object):
                           assumed if this argument is not provided.
         """
         if json:
-            msg = 'json'
+            msg = "json"
         else:
-            msg = 'message'
+            msg = "message"
         return self.emit(msg, data, callback=callback, namespace=namespace)
 
     def get_received(self, namespace=None):
@@ -193,10 +209,8 @@ class SocketIOTestClient(object):
                           provided.
         """
         if not self.is_connected(namespace):
-            raise RuntimeError('not connected')
-        namespace = namespace or '/'
-        r = [pkt for pkt in self.queue[self.sid]
-             if pkt['namespace'] == namespace]
-        self.queue[self.sid] = [pkt for pkt in self.queue[self.sid]
-                                if pkt not in r]
+            raise RuntimeError("not connected")
+        namespace = namespace or "/"
+        r = [pkt for pkt in self.queue[self.sid] if pkt["namespace"] == namespace]
+        self.queue[self.sid] = [pkt for pkt in self.queue[self.sid] if pkt not in r]
         return r

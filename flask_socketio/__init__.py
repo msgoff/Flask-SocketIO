@@ -10,9 +10,11 @@ try:
 except ImportError:
     gevent_socketio_found = False
 if gevent_socketio_found:
-    print('The gevent-socketio package is incompatible with this version of '
-          'the Flask-SocketIO extension. Please uninstall it, and then '
-          'install the latest version of python-socketio in its place.')
+    print(
+        "The gevent-socketio package is incompatible with this version of "
+        "the Flask-SocketIO extension. Please uninstall it, and then "
+        "install the latest version of python-socketio in its place."
+    )
     sys.exit(1)
 
 import flask
@@ -26,30 +28,31 @@ from werkzeug.serving import run_with_reloader
 from .namespace import Namespace
 from .test_client import SocketIOTestClient
 
-__version__ = '4.2.2dev'
+__version__ = "4.2.2dev"
 
 
 class _SocketIOMiddleware(socketio.WSGIApp):
     """This WSGI middleware simply exposes the Flask application in the WSGI
     environment before executing the request.
     """
-    def __init__(self, socketio_app, flask_app, socketio_path='socket.io'):
+
+    def __init__(self, socketio_app, flask_app, socketio_path="socket.io"):
         self.flask_app = flask_app
-        super(_SocketIOMiddleware, self).__init__(socketio_app,
-                                                  flask_app.wsgi_app,
-                                                  socketio_path=socketio_path)
+        super(_SocketIOMiddleware, self).__init__(
+            socketio_app, flask_app.wsgi_app, socketio_path=socketio_path
+        )
 
     def __call__(self, environ, start_response):
         environ = environ.copy()
-        environ['flask.app'] = self.flask_app
-        return super(_SocketIOMiddleware, self).__call__(environ,
-                                                         start_response)
+        environ["flask.app"] = self.flask_app
+        return super(_SocketIOMiddleware, self).__call__(environ, start_response)
 
 
 class _ManagedSession(dict, SessionMixin):
     """This class is used for user sessions that are managed by
     Flask-SocketIO. It is simple dict, expanded with the Flask session
     attributes."""
+
     pass
 
 
@@ -184,39 +187,38 @@ class SocketIO(object):
         #   (standard initialization for auxiliary process)
         # In all other cases we collect the arguments and assume the client
         # will call init_app from an app factory function.
-        if app is not None or 'message_queue' in kwargs:
+        if app is not None or "message_queue" in kwargs:
             self.init_app(app, **kwargs)
         else:
             self.server_options.update(kwargs)
 
     def init_app(self, app, **kwargs):
         if app is not None:
-            if not hasattr(app, 'extensions'):
+            if not hasattr(app, "extensions"):
                 app.extensions = {}  # pragma: no cover
-            app.extensions['socketio'] = self
+            app.extensions["socketio"] = self
         self.server_options.update(kwargs)
-        self.manage_session = self.server_options.pop('manage_session',
-                                                      self.manage_session)
+        self.manage_session = self.server_options.pop(
+            "manage_session", self.manage_session
+        )
 
-        if 'client_manager' not in self.server_options:
-            url = self.server_options.pop('message_queue', None)
-            channel = self.server_options.pop('channel', 'flask-socketio')
+        if "client_manager" not in self.server_options:
+            url = self.server_options.pop("message_queue", None)
+            channel = self.server_options.pop("channel", "flask-socketio")
             write_only = app is None
             if url:
-                if url.startswith(('redis://', "rediss://")):
+                if url.startswith(("redis://", "rediss://")):
                     queue_class = socketio.RedisManager
-                elif url.startswith(('kafka://')):
+                elif url.startswith(("kafka://")):
                     queue_class = socketio.KafkaManager
-                elif url.startswith('zmq'):
+                elif url.startswith("zmq"):
                     queue_class = socketio.ZmqManager
                 else:
                     queue_class = socketio.KombuManager
-                queue = queue_class(url, channel=channel,
-                                    write_only=write_only)
-                self.server_options['client_manager'] = queue
+                queue = queue_class(url, channel=channel, write_only=write_only)
+                self.server_options["client_manager"] = queue
 
-        if 'json' in self.server_options and \
-                self.server_options['json'] == flask_json:
+        if "json" in self.server_options and self.server_options["json"] == flask_json:
             # flask's json module is tricky to use because its output
             # changes when it is invoked inside or outside the app context
             # so here to prevent any ambiguities we replace it with wrappers
@@ -232,19 +234,23 @@ class SocketIO(object):
                     with app.app_context():
                         return flask_json.loads(*args, **kwargs)
 
-            self.server_options['json'] = FlaskSafeJSON
+            self.server_options["json"] = FlaskSafeJSON
 
-        resource = self.server_options.pop('path', None) or \
-            self.server_options.pop('resource', None) or 'socket.io'
-        if resource.startswith('/'):
+        resource = (
+            self.server_options.pop("path", None)
+            or self.server_options.pop("resource", None)
+            or "socket.io"
+        )
+        if resource.startswith("/"):
             resource = resource[1:]
-        if os.environ.get('FLASK_RUN_FROM_CLI'):
-            if self.server_options.get('async_mode') is None:
+        if os.environ.get("FLASK_RUN_FROM_CLI"):
+            if self.server_options.get("async_mode") is None:
                 if app is not None:
                     app.logger.warning(
-                        'Flask-SocketIO is Running under Werkzeug, WebSocket '
-                        'is not available.')
-                self.server_options['async_mode'] = 'threading'
+                        "Flask-SocketIO is Running under Werkzeug, WebSocket "
+                        "is not available."
+                    )
+                self.server_options["async_mode"] = "threading"
         self.server = socketio.Server(**self.server_options)
         self.async_mode = self.server.async_mode
         for handler in self.handlers:
@@ -255,8 +261,9 @@ class SocketIO(object):
         if app is not None:
             # here we attach the SocketIO middlware to the SocketIO object so it
             # can be referenced later if debug middleware needs to be inserted
-            self.sockio_mw = _SocketIOMiddleware(self.server, app,
-                                                 socketio_path=resource)
+            self.sockio_mw = _SocketIOMiddleware(
+                self.server, app, socketio_path=resource
+            )
             app.wsgi_app = self.sockio_mw
 
     def on(self, message, namespace=None):
@@ -278,19 +285,19 @@ class SocketIO(object):
         :param namespace: The namespace on which the handler is to be
                           registered. Defaults to the global namespace.
         """
-        namespace = namespace or '/'
+        namespace = namespace or "/"
 
         def decorator(handler):
             @wraps(handler)
             def _handler(sid, *args):
-                return self._handle_event(handler, message, namespace, sid,
-                                          *args)
+                return self._handle_event(handler, message, namespace, sid, *args)
 
             if self.server:
                 self.server.on(message, _handler, namespace=namespace)
             else:
                 self.handlers.append((message, _handler, namespace))
             return handler
+
         return decorator
 
     def on_error(self, namespace=None):
@@ -308,13 +315,14 @@ class SocketIO(object):
         :param namespace: The namespace for which to register the error
                           handler. Defaults to the global namespace.
         """
-        namespace = namespace or '/'
+        namespace = namespace or "/"
 
         def decorator(exception_handler):
             if not callable(exception_handler):
-                raise ValueError('exception_handler must be callable')
+                raise ValueError("exception_handler must be callable")
             self.exception_handlers[namespace] = exception_handler
             return exception_handler
+
         return decorator
 
     def on_error_default(self, exception_handler):
@@ -329,7 +337,7 @@ class SocketIO(object):
                 print('An error has occurred: ' + str(e))
         """
         if not callable(exception_handler):
-            raise ValueError('exception_handler must be callable')
+            raise ValueError("exception_handler must be callable")
         self.default_exception_handler = exception_handler
         return exception_handler
 
@@ -360,7 +368,7 @@ class SocketIO(object):
 
     def on_namespace(self, namespace_handler):
         if not isinstance(namespace_handler, Namespace):
-            raise ValueError('Not a namespace instance.')
+            raise ValueError("Not a namespace instance.")
         namespace_handler._set_socketio(self)
         if self.server:
             self.server.register_namespace(namespace_handler)
@@ -402,23 +410,24 @@ class SocketIO(object):
                          those provided by the client. Callback functions can
                          only be used when addressing an individual client.
         """
-        namespace = kwargs.pop('namespace', '/')
-        room = kwargs.pop('room', None)
-        include_self = kwargs.pop('include_self', True)
-        skip_sid = kwargs.pop('skip_sid', None)
+        namespace = kwargs.pop("namespace", "/")
+        room = kwargs.pop("room", None)
+        include_self = kwargs.pop("include_self", True)
+        skip_sid = kwargs.pop("skip_sid", None)
         if not include_self and not skip_sid:
             skip_sid = flask.request.sid
-        callback = kwargs.pop('callback', None)
+        callback = kwargs.pop("callback", None)
         if callback:
             # wrap the callback so that it sets app app and request contexts
             sid = None
             if has_request_context:
-                sid = getattr(flask.request, 'sid', None)
+                sid = getattr(flask.request, "sid", None)
             original_callback = callback
 
             def _callback_wrapper(*args):
-                return self._handle_event(original_callback, None, namespace,
-                                          sid, *args)
+                return self._handle_event(
+                    original_callback, None, namespace, sid, *args
+                )
 
             if sid:
                 # the callback wrapper above will install a request context
@@ -426,11 +435,27 @@ class SocketIO(object):
                 # we only use it if the emit was issued from a Socket.IO
                 # populated request context (i.e. request.sid is defined)
                 callback = _callback_wrapper
-        self.server.emit(event, *args, namespace=namespace, room=room,
-                         skip_sid=skip_sid, callback=callback, **kwargs)
+        self.server.emit(
+            event,
+            *args,
+            namespace=namespace,
+            room=room,
+            skip_sid=skip_sid,
+            callback=callback,
+            **kwargs
+        )
 
-    def send(self, data, json=False, namespace=None, room=None,
-             callback=None, include_self=True, skip_sid=None, **kwargs):
+    def send(
+        self,
+        data,
+        json=False,
+        namespace=None,
+        room=None,
+        callback=None,
+        include_self=True,
+        skip_sid=None,
+        **kwargs
+    ):
         """Send a server-generated SocketIO message.
 
         This function sends a simple SocketIO message to one or more connected
@@ -463,11 +488,25 @@ class SocketIO(object):
         """
         skip_sid = flask.request.sid if not include_self else skip_sid
         if json:
-            self.emit('json', data, namespace=namespace, room=room,
-                      skip_sid=skip_sid, callback=callback, **kwargs)
+            self.emit(
+                "json",
+                data,
+                namespace=namespace,
+                room=room,
+                skip_sid=skip_sid,
+                callback=callback,
+                **kwargs
+            )
         else:
-            self.emit('message', data, namespace=namespace, room=room,
-                      skip_sid=skip_sid, callback=callback, **kwargs)
+            self.emit(
+                "message",
+                data,
+                namespace=namespace,
+                room=room,
+                skip_sid=skip_sid,
+                callback=callback,
+                **kwargs
+            )
 
     def close_room(self, room, namespace=None):
         """Close a room.
@@ -509,21 +548,21 @@ class SocketIO(object):
                        case.
         """
         if host is None:
-            host = '127.0.0.1'
+            host = "127.0.0.1"
         if port is None:
-            server_name = app.config['SERVER_NAME']
-            if server_name and ':' in server_name:
-                port = int(server_name.rsplit(':', 1)[1])
+            server_name = app.config["SERVER_NAME"]
+            if server_name and ":" in server_name:
+                port = int(server_name.rsplit(":", 1)[1])
             else:
                 port = 5000
 
-        debug = kwargs.pop('debug', app.debug)
-        log_output = kwargs.pop('log_output', debug)
-        use_reloader = kwargs.pop('use_reloader', debug)
-        extra_files = kwargs.pop('extra_files', None)
+        debug = kwargs.pop("debug", app.debug)
+        log_output = kwargs.pop("log_output", debug)
+        use_reloader = kwargs.pop("use_reloader", debug)
+        extra_files = kwargs.pop("extra_files", None)
 
         app.debug = debug
-        if app.debug and self.server.eio.async_mode != 'threading':
+        if app.debug and self.server.eio.async_mode != "threading":
             # put the debug middleware between the SocketIO middleware
             # and the Flask application instance
             #
@@ -545,71 +584,91 @@ class SocketIO(object):
             #     o
             #  Flask-SocketIO WebSocket handler
             #
-            self.sockio_mw.wsgi_app = DebuggedApplication(self.sockio_mw.wsgi_app,
-                                                          evalex=True)
+            self.sockio_mw.wsgi_app = DebuggedApplication(
+                self.sockio_mw.wsgi_app, evalex=True
+            )
 
-        if self.server.eio.async_mode == 'threading':
+        if self.server.eio.async_mode == "threading":
             from werkzeug._internal import _log
-            _log('warning', 'WebSocket transport not available. Install '
-                            'eventlet or gevent and gevent-websocket for '
-                            'improved performance.')
-            app.run(host=host, port=port, threaded=True,
-                    use_reloader=use_reloader, **kwargs)
-        elif self.server.eio.async_mode == 'eventlet':
+
+            _log(
+                "warning",
+                "WebSocket transport not available. Install "
+                "eventlet or gevent and gevent-websocket for "
+                "improved performance.",
+            )
+            app.run(
+                host=host, port=port, threaded=True, use_reloader=use_reloader, **kwargs
+            )
+        elif self.server.eio.async_mode == "eventlet":
+
             def run_server():
                 import eventlet
                 import eventlet.wsgi
                 import eventlet.green
+
                 addresses = eventlet.green.socket.getaddrinfo(host, port)
                 if not addresses:
-                    raise RuntimeError('Could not resolve host to a valid address')
+                    raise RuntimeError("Could not resolve host to a valid address")
                 eventlet_socket = eventlet.listen(addresses[0][4], addresses[0][0])
 
                 # If provided an SSL argument, use an SSL socket
-                ssl_args = ['keyfile', 'certfile', 'server_side', 'cert_reqs',
-                            'ssl_version', 'ca_certs',
-                            'do_handshake_on_connect', 'suppress_ragged_eofs',
-                            'ciphers']
+                ssl_args = [
+                    "keyfile",
+                    "certfile",
+                    "server_side",
+                    "cert_reqs",
+                    "ssl_version",
+                    "ca_certs",
+                    "do_handshake_on_connect",
+                    "suppress_ragged_eofs",
+                    "ciphers",
+                ]
                 ssl_params = {k: kwargs[k] for k in kwargs if k in ssl_args}
                 if len(ssl_params) > 0:
                     for k in ssl_params:
                         kwargs.pop(k)
-                    ssl_params['server_side'] = True  # Listening requires true
-                    eventlet_socket = eventlet.wrap_ssl(eventlet_socket,
-                                                        **ssl_params)
+                    ssl_params["server_side"] = True  # Listening requires true
+                    eventlet_socket = eventlet.wrap_ssl(eventlet_socket, **ssl_params)
 
-                eventlet.wsgi.server(eventlet_socket, app,
-                                     log_output=log_output, **kwargs)
+                eventlet.wsgi.server(
+                    eventlet_socket, app, log_output=log_output, **kwargs
+                )
 
             if use_reloader:
                 run_with_reloader(run_server, extra_files=extra_files)
             else:
                 run_server()
-        elif self.server.eio.async_mode == 'gevent':
+        elif self.server.eio.async_mode == "gevent":
             from gevent import pywsgi
+
             try:
                 from geventwebsocket.handler import WebSocketHandler
+
                 websocket = True
             except ImportError:
                 app.logger.warning(
-                    'WebSocket transport not available. Install '
-                    'gevent-websocket for improved performance.')
+                    "WebSocket transport not available. Install "
+                    "gevent-websocket for improved performance."
+                )
                 websocket = False
 
-            log = 'default'
+            log = "default"
             if not log_output:
                 log = None
             if websocket:
                 self.wsgi_server = pywsgi.WSGIServer(
-                    (host, port), app, handler_class=WebSocketHandler,
-                    log=log, **kwargs)
+                    (host, port), app, handler_class=WebSocketHandler, log=log, **kwargs
+                )
             else:
-                self.wsgi_server = pywsgi.WSGIServer((host, port), app,
-                                                     log=log, **kwargs)
+                self.wsgi_server = pywsgi.WSGIServer(
+                    (host, port), app, log=log, **kwargs
+                )
 
             if use_reloader:
                 # monkey patching is required by the reloader
                 from gevent import monkey
+
                 monkey.patch_thread()
                 monkey.patch_time()
 
@@ -625,15 +684,15 @@ class SocketIO(object):
 
         This method must be called from a HTTP or SocketIO handler function.
         """
-        if self.server.eio.async_mode == 'threading':
-            func = flask.request.environ.get('werkzeug.server.shutdown')
+        if self.server.eio.async_mode == "threading":
+            func = flask.request.environ.get("werkzeug.server.shutdown")
             if func:
                 func()
             else:
-                raise RuntimeError('Cannot stop unknown web server')
-        elif self.server.eio.async_mode == 'eventlet':
+                raise RuntimeError("Cannot stop unknown web server")
+        elif self.server.eio.async_mode == "eventlet":
             raise SystemExit
-        elif self.server.eio.async_mode == 'gevent':
+        elif self.server.eio.async_mode == "gevent":
             self.wsgi_server.stop()
 
     def start_background_task(self, target, *args, **kwargs):
@@ -663,8 +722,14 @@ class SocketIO(object):
         """
         return self.server.sleep(seconds)
 
-    def test_client(self, app, namespace=None, query_string=None,
-                    headers=None, flask_test_client=None):
+    def test_client(
+        self,
+        app,
+        namespace=None,
+        query_string=None,
+        headers=None,
+        flask_test_client=None,
+    ):
         """The Socket.IO test client is useful for testing a Flask-SocketIO
         server. It works in a similar way to the Flask Test Client, but
         adapted to the Socket.IO server.
@@ -682,23 +747,29 @@ class SocketIO(object):
                                   cookies set in HTTP routes accessible from
                                   Socket.IO events.
         """
-        return SocketIOTestClient(app, self, namespace=namespace,
-                                  query_string=query_string, headers=headers,
-                                  flask_test_client=flask_test_client)
+        return SocketIOTestClient(
+            app,
+            self,
+            namespace=namespace,
+            query_string=query_string,
+            headers=headers,
+            flask_test_client=flask_test_client,
+        )
 
     def _handle_event(self, handler, message, namespace, sid, *args):
         if sid not in self.server.environ:
             # we don't have record of this client, ignore this event
-            return '', 400
-        app = self.server.environ[sid]['flask.app']
+            return "", 400
+        app = self.server.environ[sid]["flask.app"]
         with app.request_context(self.server.environ[sid]):
             if self.manage_session:
                 # manage a separate session for this client's Socket.IO events
                 # created as a copy of the regular user session
-                if 'saved_session' not in self.server.environ[sid]:
-                    self.server.environ[sid]['saved_session'] = \
-                        _ManagedSession(flask.session)
-                session_obj = self.server.environ[sid]['saved_session']
+                if "saved_session" not in self.server.environ[sid]:
+                    self.server.environ[sid]["saved_session"] = _ManagedSession(
+                        flask.session
+                    )
+                session_obj = self.server.environ[sid]["saved_session"]
             else:
                 # let Flask handle the user session
                 # for cookie based sessions, this effectively freezes the
@@ -709,22 +780,23 @@ class SocketIO(object):
             _request_ctx_stack.top.session = session_obj
             flask.request.sid = sid
             flask.request.namespace = namespace
-            flask.request.event = {'message': message, 'args': args}
+            flask.request.event = {"message": message, "args": args}
             try:
-                if message == 'connect':
+                if message == "connect":
                     ret = handler()
                 else:
                     ret = handler(*args)
             except:
                 err_handler = self.exception_handlers.get(
-                    namespace, self.default_exception_handler)
+                    namespace, self.default_exception_handler
+                )
                 if err_handler is None:
                     raise
                 type, value, traceback = sys.exc_info()
                 return err_handler(value)
             if not self.manage_session:
                 # when Flask is managing the user session, it needs to save it
-                if not hasattr(session_obj, 'modified') or session_obj.modified:
+                if not hasattr(session_obj, "modified") or session_obj.modified:
                     resp = app.response_class()
                     app.session_interface.save_session(app, session_obj, resp)
             return ret
@@ -770,23 +842,30 @@ def emit(event, *args, **kwargs):
                          single addresee. It is recommended to always leave
                          this parameter with its default value of ``False``.
     """
-    if 'namespace' in kwargs:
-        namespace = kwargs['namespace']
+    if "namespace" in kwargs:
+        namespace = kwargs["namespace"]
     else:
         namespace = flask.request.namespace
-    callback = kwargs.get('callback')
-    broadcast = kwargs.get('broadcast')
-    room = kwargs.get('room')
+    callback = kwargs.get("callback")
+    broadcast = kwargs.get("broadcast")
+    room = kwargs.get("room")
     if room is None and not broadcast:
         room = flask.request.sid
-    include_self = kwargs.get('include_self', True)
-    skip_sid = kwargs.get('skip_sid')
-    ignore_queue = kwargs.get('ignore_queue', False)
+    include_self = kwargs.get("include_self", True)
+    skip_sid = kwargs.get("skip_sid")
+    ignore_queue = kwargs.get("ignore_queue", False)
 
-    socketio = flask.current_app.extensions['socketio']
-    return socketio.emit(event, *args, namespace=namespace, room=room,
-                         include_self=include_self, skip_sid=skip_sid,
-                         callback=callback, ignore_queue=ignore_queue)
+    socketio = flask.current_app.extensions["socketio"]
+    return socketio.emit(
+        event,
+        *args,
+        namespace=namespace,
+        room=room,
+        include_self=include_self,
+        skip_sid=skip_sid,
+        callback=callback,
+        ignore_queue=ignore_queue
+    )
 
 
 def send(message, **kwargs):
@@ -825,24 +904,31 @@ def send(message, **kwargs):
                          single addresee. It is recommended to always leave
                          this parameter with its default value of ``False``.
     """
-    json = kwargs.get('json', False)
-    if 'namespace' in kwargs:
-        namespace = kwargs['namespace']
+    json = kwargs.get("json", False)
+    if "namespace" in kwargs:
+        namespace = kwargs["namespace"]
     else:
         namespace = flask.request.namespace
-    callback = kwargs.get('callback')
-    broadcast = kwargs.get('broadcast')
-    room = kwargs.get('room')
+    callback = kwargs.get("callback")
+    broadcast = kwargs.get("broadcast")
+    room = kwargs.get("room")
     if room is None and not broadcast:
         room = flask.request.sid
-    include_self = kwargs.get('include_self', True)
-    skip_sid = kwargs.get('skip_sid')
-    ignore_queue = kwargs.get('ignore_queue', False)
+    include_self = kwargs.get("include_self", True)
+    skip_sid = kwargs.get("skip_sid")
+    ignore_queue = kwargs.get("ignore_queue", False)
 
-    socketio = flask.current_app.extensions['socketio']
-    return socketio.send(message, json=json, namespace=namespace, room=room,
-                         include_self=include_self, skip_sid=skip_sid,
-                         callback=callback, ignore_queue=ignore_queue)
+    socketio = flask.current_app.extensions["socketio"]
+    return socketio.send(
+        message,
+        json=json,
+        namespace=namespace,
+        room=room,
+        include_self=include_self,
+        skip_sid=skip_sid,
+        callback=callback,
+        ignore_queue=ignore_queue,
+    )
 
 
 def join_room(room, sid=None, namespace=None):
@@ -865,7 +951,7 @@ def join_room(room, sid=None, namespace=None):
     :param namespace: The namespace for the room. If not provided, the
                       namespace is obtained from the request context.
     """
-    socketio = flask.current_app.extensions['socketio']
+    socketio = flask.current_app.extensions["socketio"]
     sid = sid or flask.request.sid
     namespace = namespace or flask.request.namespace
     socketio.server.enter_room(sid, room, namespace=namespace)
@@ -890,7 +976,7 @@ def leave_room(room, sid=None, namespace=None):
     :param namespace: The namespace for the room. If not provided, the
                       namespace is obtained from the request context.
     """
-    socketio = flask.current_app.extensions['socketio']
+    socketio = flask.current_app.extensions["socketio"]
     sid = sid or flask.request.sid
     namespace = namespace or flask.request.namespace
     socketio.server.leave_room(sid, room, namespace=namespace)
@@ -906,7 +992,7 @@ def close_room(room, namespace=None):
     :param namespace: The namespace for the room. If not provided, the
                       namespace is obtained from the request context.
     """
-    socketio = flask.current_app.extensions['socketio']
+    socketio = flask.current_app.extensions["socketio"]
     namespace = namespace or flask.request.namespace
     socketio.server.close_room(room, namespace=namespace)
 
@@ -922,7 +1008,7 @@ def rooms(sid=None, namespace=None):
     :param namespace: The namespace for the room. If not provided, the
                       namespace is obtained from the request context.
     """
-    socketio = flask.current_app.extensions['socketio']
+    socketio = flask.current_app.extensions["socketio"]
     sid = sid or flask.request.sid
     namespace = namespace or flask.request.namespace
     return socketio.server.rooms(sid, namespace=namespace)
@@ -947,7 +1033,7 @@ def disconnect(sid=None, namespace=None, silent=False):
                       namespace is obtained from the request context.
     :param silent: this option is deprecated.
     """
-    socketio = flask.current_app.extensions['socketio']
+    socketio = flask.current_app.extensions["socketio"]
     sid = sid or flask.request.sid
     namespace = namespace or flask.request.namespace
     return socketio.server.disconnect(sid, namespace=namespace)

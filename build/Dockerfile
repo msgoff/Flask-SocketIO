@@ -19,7 +19,7 @@ RUN service redis-server stop
 RUN cd /opt/
 RUN git clone https://github.com/RedisJSON/RedisJSON.git
 RUN cd /opt/RedisJSON && make
-RUN redis-server --loadmodule src/rejson.so bind 0.0.0.0 &
+RUN redis-server --loadmodule src/rejson.so bind 0.0.0.0 
 RUN cd /opt/
 RUN git clone https://github.com/msgoff/Flask-Socketio
 RUN cd Flask-Socketio
@@ -30,10 +30,10 @@ RUN pip3 install -r requirements.txt
 RUN pip3 install gevent
 
 # An ENTRYPOINT allows you to configure a container that will run as an executable.
-ENTRYPOINT ["python3"]
+ENTRYPOINT ["/bin/bash"]
 
 # There can only be one CMD instruction in a Dockerfile
 # The CMD instruction should be used to run the software contained by your image, along with any arguments. 
-CMD ["app.py","host=0.0.0.0"]
+CMD ["start_app.sh"]
 
 
