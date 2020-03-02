@@ -1,22 +1,6 @@
 from functools import wraps
 import os
 import sys
-
-# make sure gevent-socketio is not installed, as it conflicts with
-# python-socketio
-gevent_socketio_found = True
-try:
-    from socketio import socketio_manage
-except ImportError:
-    gevent_socketio_found = False
-if gevent_socketio_found:
-    print(
-        "The gevent-socketio package is incompatible with this version of "
-        "the Flask-SocketIO extension. Please uninstall it, and then "
-        "install the latest version of python-socketio in its place."
-    )
-    sys.exit(1)
-
 import flask
 from flask import _request_ctx_stack, has_request_context, json as flask_json
 from flask.sessions import SessionMixin
@@ -29,6 +13,23 @@ from .namespace import Namespace
 from .test_client import SocketIOTestClient
 
 __version__ = "4.2.2dev"
+
+#TODO create constraint test cases before running the application
+# make sure gevent-socketio is not installed, as it conflicts with
+# python-socketio
+#gevent_socketio_found = True
+#try:
+#    from socketio import socketio_manage
+#except ImportError:
+#    gevent_socketio_found = False
+#if gevent_socketio_found:
+#   print(
+#      "The gevent-socketio package is incompatible with this version of "
+#     "the Flask-SocketIO extension. Please uninstall it, and then "
+#    "install the latest version of python-socketio in its place."
+#)
+#sys.exit(1)
+
 
 
 class _SocketIOMiddleware(socketio.WSGIApp):
@@ -56,7 +57,7 @@ class _ManagedSession(dict, SessionMixin):
     pass
 
 
-class SocketIO(object):
+class SocketIO():
     """Create a Flask-SocketIO server.
 
     :param app: The flask application instance. If the application instance
@@ -223,7 +224,7 @@ class SocketIO(object):
             # changes when it is invoked inside or outside the app context
             # so here to prevent any ambiguities we replace it with wrappers
             # that ensure that the app context is always present
-            class FlaskSafeJSON(object):
+            class FlaskSafeJSON():
                 @staticmethod
                 def dumps(*args, **kwargs):
                     with app.app_context():

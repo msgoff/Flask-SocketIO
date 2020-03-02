@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+import json
+import tatsu
+from tatsu.util import asjson
+import redis
 from threading import Lock
 from flask import Flask, render_template, session, request, copy_current_request_context
 from flask_socketio import (
@@ -11,11 +15,6 @@ from flask_socketio import (
     disconnect,
 )
 
-import pprint
-import json
-from tatsu import parse
-import tatsu
-from tatsu.util import asjson
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
@@ -24,7 +23,7 @@ async_mode = None
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret!"
-socketio = SocketIO(app, async_mode=async_mode)
+socketio = SocketIO(app, async_mode=async_mode,message_queue='redis://')
 thread = None
 thread_lock = Lock()
 
@@ -40,9 +39,6 @@ def valid_expression(expression):
 
 
 def store_results(data):
-    import redis
-    import json
-
     r = redis.StrictRedis()
     r.execute_command("JSON.SET", "doc", ".", json.dumps(data))
     # reply = json.loads(r.execute_command('JSON.GET', 'doc'))
@@ -52,11 +48,12 @@ def parse_expression(expression):
     # if expression is valid, return ast
     ast = valid_expression(expression)
     if ast:
+        #import pprint
         # pprint.pprint(ast, indent=2, width=20)
         data = json.dumps(asjson(ast), indent=2)
         store_results(data)
         return data
-
+    return None
 
 def background_thread():
     """Example of how to send server generated events to clients."""

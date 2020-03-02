@@ -20,7 +20,7 @@ class Namespace(_Namespace):
         handler_name = "on_" + event
         if not hasattr(self, handler_name):
             # there is no handler for this event, so we ignore it
-            return
+            return None
         handler = getattr(self, handler_name)
         return self.socketio._handle_event(handler, event, self.namespace, *args)
 

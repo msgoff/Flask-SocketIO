@@ -4,14 +4,14 @@ from flask_session import Session
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "top-secret!"
+app.config["SECRET_KEY"] = "asdfasdfasdfasdfasdfasdf"
 app.config["SESSION_TYPE"] = "filesystem"
 login = LoginManager(app)
 Session(app)
-socketio = SocketIO(app, manage_session=False)
+socketio = SocketIO(app, manage_session=False,message_queue='redis://')
 
 
-class User(UserMixin, object):
+class User(UserMixin):
     def __init__(self, id=None):
         self.id = id
 
