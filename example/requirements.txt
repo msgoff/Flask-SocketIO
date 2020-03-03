@@ -1,3 +1,4 @@
+gevent
 tatsu
 redis
 Flask==1.0.2

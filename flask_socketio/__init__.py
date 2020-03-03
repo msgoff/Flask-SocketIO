@@ -640,19 +640,19 @@ class SocketIO():
                 run_with_reloader(run_server, extra_files=extra_files)
             else:
                 run_server()
-        elif self.server.eio.async_mode == "gevent":
-            from gevent import pywsgi
+        #elif self.server.eio.async_mode == "gevent":
+        #    from gevent import pywsgi
 
-            try:
-                from geventwebsocket.handler import WebSocketHandler
+        #    try:
+         #       from geventwebsocket.handler import WebSocketHandler
 
-                websocket = True
-            except ImportError:
-                app.logger.warning(
-                    "WebSocket transport not available. Install "
-                    "gevent-websocket for improved performance."
-                )
-                websocket = False
+          #      websocket = True
+           # except ImportError:
+            #    app.logger.warning(
+             #       "WebSocket transport not available. Install "
+              #      "gevent-websocket for improved performance."
+               # )
+                #websocket = False
 
             log = "default"
             if not log_output:
@@ -693,8 +693,8 @@ class SocketIO():
                 raise RuntimeError("Cannot stop unknown web server")
         elif self.server.eio.async_mode == "eventlet":
             raise SystemExit
-        elif self.server.eio.async_mode == "gevent":
-            self.wsgi_server.stop()
+        #elif self.server.eio.async_mode == "gevent":
+         #   self.wsgi_server.stop()
 
     def start_background_task(self, target, *args, **kwargs):
         """Start a background task using the appropriate async model.
