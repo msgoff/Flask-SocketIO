@@ -29,6 +29,7 @@ WORKDIR /opt/Flask-Socketio/example/
 RUN pip3 install -r requirements.txt
 RUN pip3 install gevent
 WORKDIR /opt/Flask-Socketio/example
+RUN mkdir static
 RUN /bin/bash get_static_assets.sh
 # An ENTRYPOINT allows you to configure a container that will run as an executable.
 ENTRYPOINT ["/bin/bash"]
