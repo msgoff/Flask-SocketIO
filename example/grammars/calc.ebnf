@@ -23,8 +23,10 @@
     factor
         =
         | '(' expression ')'
-        | number
-        ;
+        | '{' expression '}'
+	| number
+        | float
+	;
 
-
+    float = /\d*\.\d+/ 
     number = /\d+/ ;
