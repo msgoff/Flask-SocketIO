@@ -9,6 +9,7 @@ RUN apt-get update && \
     gcc \
     git \ 
     make \
+    wget \
     graphviz \
     python3-dev \
     python-dev \

@@ -17,7 +17,6 @@ verify_checksum(){
 	
 
 
-sudo apt install -y wget
 wget https://code.jquery.com/jquery-1.12.4.min.js
 wget https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js
 
