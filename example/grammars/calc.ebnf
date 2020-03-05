@@ -24,9 +24,6 @@
         =
         | '(' expression ')'
         | '{' expression '}'
-	| number
-        | float
 	;
 
-    float = /\d*\.\d+/ 
     number = /\d+/ ;
