@@ -1,8 +1,3 @@
-virtualenv venv -p python3
-source venv/bin/activate
-pip install -r requirements.txt
-#cd /opt/RedisJSON
-#redis-server --loadmodule src/rejson.so bind 0.0.0.0 &
 verify_checksum(){
 	if [[ -f "$1" ]]
 		then
@@ -22,8 +17,8 @@ verify_checksum(){
 	
 
 
-
-wget https://code.jquery.com/jquery-1.12.4.min.js -o static/jquery-1.12.4.min.js
+sudo apt install -y wget
+wget https://code.jquery.com/jquery-1.12.4.min.js
 wget https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js
 
 verify_checksum jquery-1.12.4.min.js "ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="

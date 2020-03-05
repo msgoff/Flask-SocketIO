@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Flask-SocketIO Test</title>
-    <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script src="static/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="static/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             // Use a "/test" namespace.
@@ -30,7 +30,20 @@
             // to the client. The data is then displayed in the "Received"
             // section of the page.
             socket.on('my_response', function(msg, cb) {
-                $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
+		
+		var arr = msg.data;
+		for (var i = 0; i < arr; i++){
+		    	console.log(1);
+			var obj = arr[i];
+		    for (var key in obj){
+			var attrName = key;
+			var attrValue = obj[key];
+		    	console.log(attrName);
+		    	console.log(attrValue);
+
+		    }
+		}   
+                $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ').html());
                 if (cb)
                     cb();
             });
