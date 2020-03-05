@@ -48,10 +48,10 @@ def parse_expression(expression):
     # if expression is valid, return ast
     ast = valid_expression(expression)
     if ast:
-        #import pprint
+        import pprint
         # pprint.pprint(ast, indent=2, width=20)
         #data = json.dumps(asjson(pprint.pprint(ast,indent=2, width=20)))
-        data = json.dumps(asjson(ast), indent=2)
+        data = json.dumps(asjson(ast), indent=2) 
         store_results(data)
         return data
     return None
