@@ -24,6 +24,7 @@
         =
         | '(' expression ')'
         | '{' expression '}'
+	| number
 	;
 
     number = /\d+/ ;
