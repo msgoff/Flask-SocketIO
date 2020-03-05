@@ -6,24 +6,24 @@
 
     expression
         =
-        | expression '+' term
-        | expression '-' term
+        | lhs:expression binop:'+' ~ rhs:term
+        | lhs:expression binop:'-' ~ rhs:term
         | term
         ;
 
 
     term
         =
-        | term '*' factor
-        | term '/' factor
+        | lhs:term binop:'*' ~ rhs:factor
+        | lhs:term binop:'/' ~ rhs:factor
         | factor
         ;
 
 
     factor
         =
-        | '(' expression ')'
-        | '{' expression '}'
+        | '(' ~ @:expression ')'
+        | '{' ~ @:expression '}'
 	| number
 	;
 
