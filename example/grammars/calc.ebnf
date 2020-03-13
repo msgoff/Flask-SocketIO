@@ -24,7 +24,13 @@
         =
         | '(' ~ @:expression ')'
         | '{' ~ @:expression '}'
-	| number
+	| integer
+	| float
 	;
 
-    number = /\d+/ ;
+    integer = /\d+/ 
+	
+    float
+	=
+	| /\d*\.\d+/ ;
+
