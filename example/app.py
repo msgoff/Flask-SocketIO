@@ -76,6 +76,8 @@ def index():
 
 @socketio.on("my_event", namespace="/test")
 def test_message(message):
+    response = message["data"]
+    print(response)
     data = parse_expression(message["data"])
     session["receive_count"] = session.get("receive_count", 0) + 1
     emit("my_response", {"data": data, "count": session["receive_count"]})
