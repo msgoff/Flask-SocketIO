@@ -6,31 +6,40 @@
 
     expression
         =
-        | lhs:expression binop:'+' ~ rhs:term
-        | lhs:expression binop:'-' ~ rhs:term
+        | expression '+' term
+        | expression '-' term
         | term
         ;
 
 
     term
         =
-        | lhs:term binop:'*' ~ rhs:factor
-        | lhs:term binop:'/' ~ rhs:factor
+        | term '*' factor
+        | term '/' factor
         | factor
         ;
 
 
     factor
         =
-        | '(' ~ @:expression ')'
-        | '{' ~ @:expression '}'
-	| integer
-	| float
-	;
+        | '(' expression ')'
+        | real
+        ;
 
-    integer = /\d+/ 
-	
-    float
-	=
-	| /\d*\.\d+/ ;
+
+   
+    real 
+    =
+    |scientific
+    |float
+    |integer;
+    
+    scientific = /[0-9]*\.*[0-9]+[eEdD][+-]?[0-9]+/ ;
+    
+    float = /[0-9]*.[0-9]+/
+    ;
+    
+    integer  = /\d+/
+    ;
+    
 
