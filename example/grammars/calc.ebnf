@@ -23,13 +23,57 @@
     factor
         =
         | '(' expression ')'
+        |  latex 
         | real
         ;
 
 
+    latex 
+        =
+        |func_log
+        |func_ln 
+        |func_sin
+        |func_cos
+        |func_tan
+        |func_csc
+        |func_sec
+        |func_cot
+        ;
+        
+    l_paren = '(';
+    r_paren =  ')';
+    l_brace =  '{';
+    r_brace = '}';
+    l_bracket = '[';
+    r_bracket = ']';
+  
+    symbol 
+        = 
+        | variable
+        | constant
+        ;
+        
+    variable
+        =
+        | 'x'
+        | 'y'
+        | 'z'
+    ;
+    
+    constant = real ;
+        
+    func_log = '\\log' (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace);
+    func_ln =  "\\ln" ;
+    func_sin = "\\sin" ;
+    func_cos  = "\\cos" ;
+    func_tan  = "\\tan" ;
+    func_csc =  "\\csc" ;
+    func_sec =   "\\sec" ;
+    func_cot = "\\cot" ;
+
    
     real 
-    =
+        =
     |scientific
     |float
     |integer;
@@ -42,4 +86,5 @@
     integer  = /\d+/
     ;
     
+
 
