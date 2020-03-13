@@ -30,11 +30,13 @@ thread_lock = Lock()
 
 def valid_expression(expression):
     try:
+        print(expression)
         grammar = open("grammars/calc.ebnf").read()
         parser = tatsu.compile(grammar)
         ast = parser.parse(expression)
         return ast
-    except:
+    except Exception as e:
+        print(e)
         return False
 
 
