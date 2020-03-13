@@ -229,6 +229,131 @@ class CALCParser(Parser):
                 self._func_artanh_()
             with self._option():
                 self._func_sqrt_()
+            with self._option():
+                self._greek_alpha_()
+            with self._option():
+                self._greek_beta_()
+            with self._option():
+                self._greek_gamma_()
+            with self._option():
+                self._greek_mu_()
+            with self._option():
+                self._greek_phi_()
+            with self._option():
+                self._greek_pi_()
+            with self._option():
+                self._greek_varphi_()
+            with self._option():
+                self._accent_hat_()
+            with self._option():
+                self._accent_bar_()
+            with self._option():
+                self._accent_prime_()
+            with self._option():
+                self._cmd_times_()
+            with self._option():
+                self._cmd_cdot_()
+            with self._option():
+                self._cmd_div_()
+            with self._option():
+                self._cmd_frac_()
+            with self._option():
+                self._cmd_mathig_()
+            self._error('no available options')
+
+    @tatsumasu()
+    def _cmd_times_(self):  # noqa
+        self._token('\\times')
+
+    @tatsumasu()
+    def _cmd_cdot_(self):  # noqa
+        self._token('\\cdot')
+
+    @tatsumasu()
+    def _cmd_div_(self):  # noqa
+        self._token('\\div')
+
+    @tatsumasu()
+    def _cmd_frac_(self):  # noqa
+        self._token('\\frac')
+
+    @tatsumasu()
+    def _cmd_mathig_(self):  # noqa
+        self._token('\\mathit')
+
+    @tatsumasu()
+    def _accent_hat_(self):  # noqa
+        self._token('\\hat')
+
+    @tatsumasu()
+    def _accent_bar_(self):  # noqa
+        self._token('\\bar')
+
+    @tatsumasu()
+    def _accent_prime_(self):  # noqa
+        self._token('\\prime')
+
+    @tatsumasu()
+    def _greek_alpha_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('\\alpha')
+            with self._option():
+                self._token('\\Alpha')
+            self._error('no available options')
+
+    @tatsumasu()
+    def _greek_beta_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('\\beta')
+            with self._option():
+                self._token('\\Beta')
+            self._error('no available options')
+
+    @tatsumasu()
+    def _greek_gamma_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('\\gamma')
+            with self._option():
+                self._token('\\Gamma')
+            self._error('no available options')
+
+    @tatsumasu()
+    def _greek_mu_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('\\mu')
+            with self._option():
+                self._token('\\Mu')
+            self._error('no available options')
+
+    @tatsumasu()
+    def _greek_phi_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('\\phi')
+            with self._option():
+                self._token('\\Phi')
+            self._error('no available options')
+
+    @tatsumasu()
+    def _greek_pi_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('\\pi')
+            with self._option():
+                self._token('\\Pi')
+            self._error('no available options')
+
+    @tatsumasu()
+    def _greek_varphi_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('\\varphi')
+            with self._option():
+                self._token('\\VarPhi')
             self._error('no available options')
 
     @tatsumasu()
@@ -970,26 +1095,6 @@ class CALCParser(Parser):
             self._error('no available options')
 
     @tatsumasu()
-    def _cmd_times_(self):  # noqa
-        self._token('\\times')
-
-    @tatsumasu()
-    def _cmd_cdot_(self):  # noqa
-        self._token('\\cdot')
-
-    @tatsumasu()
-    def _cmd_div_(self):  # noqa
-        self._token('\\div')
-
-    @tatsumasu()
-    def _cmd_frac_(self):  # noqa
-        self._token('\\frac')
-
-    @tatsumasu()
-    def _cmd_mathig_(self):  # noqa
-        self._token('\\mathit')
-
-    @tatsumasu()
     def _real_(self):  # noqa
         with self._choice():
             with self._option():
@@ -1048,6 +1153,51 @@ class CALCSemantics(object):
         return ast
 
     def latex(self, ast):  # noqa
+        return ast
+
+    def cmd_times(self, ast):  # noqa
+        return ast
+
+    def cmd_cdot(self, ast):  # noqa
+        return ast
+
+    def cmd_div(self, ast):  # noqa
+        return ast
+
+    def cmd_frac(self, ast):  # noqa
+        return ast
+
+    def cmd_mathig(self, ast):  # noqa
+        return ast
+
+    def accent_hat(self, ast):  # noqa
+        return ast
+
+    def accent_bar(self, ast):  # noqa
+        return ast
+
+    def accent_prime(self, ast):  # noqa
+        return ast
+
+    def greek_alpha(self, ast):  # noqa
+        return ast
+
+    def greek_beta(self, ast):  # noqa
+        return ast
+
+    def greek_gamma(self, ast):  # noqa
+        return ast
+
+    def greek_mu(self, ast):  # noqa
+        return ast
+
+    def greek_phi(self, ast):  # noqa
+        return ast
+
+    def greek_pi(self, ast):  # noqa
+        return ast
+
+    def greek_varphi(self, ast):  # noqa
         return ast
 
     def l_paren(self, ast):  # noqa
@@ -1153,21 +1303,6 @@ class CALCSemantics(object):
         return ast
 
     def LIM_APPROACH_SYM(self, ast):  # noqa
-        return ast
-
-    def cmd_times(self, ast):  # noqa
-        return ast
-
-    def cmd_cdot(self, ast):  # noqa
-        return ast
-
-    def cmd_div(self, ast):  # noqa
-        return ast
-
-    def cmd_frac(self, ast):  # noqa
-        return ast
-
-    def cmd_mathig(self, ast):  # noqa
         return ast
 
     def real(self, ast):  # noqa
