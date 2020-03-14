@@ -7,7 +7,7 @@
         =
         | expression '+' term
         | expression '-' term
-        | expression cmpop expression
+        | expression comp_op expression
         | term
         ;
    
@@ -25,7 +25,7 @@
         | symbol
         ;
     
-    cmpop 
+    comp_op 
         = 
         | Equal
         | NotEq 
@@ -252,7 +252,7 @@
     symbol 
         = 
         | variable
-        | constant
+        | number
         ;
         
     variable
@@ -262,32 +262,31 @@
         | 'z'
     ;
     
-    constant = real ;
-    func_lim =  "\\lim" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_int =  "\\int" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_sum =  "\\sum" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_prod = "\\prod" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_log =  "\\log" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_ln =   "\\ln" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_sin =  "\\sin" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_cos =  "\\cos" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_tan =  "\\tan" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_csc =  "\\csc" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_sec =  "\\sec" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_cot =  "\\cot" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_arcsin = "\\arcsin" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_arccos = "\\arccos" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_arctan = "\\arctan" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_arccsc = "\\arccsc" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_arcsec = "\\arcsec" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_arccot = "\\arccot" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_sinh = "\\sinh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_cosh = "\\cosh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_tanh = "\\tanh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_arsinh = "\\arsinh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_arcosh = "\\arcosh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_artanh = "\\artanh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
-    func_sqrt = "\\sqrt" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_lim =  "\\lim" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_int =  "\\int" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_sum =  "\\sum" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_prod = "\\prod" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_log =  "\\log" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_ln =   "\\ln" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_sin =  "\\sin" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_cos =  "\\cos" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_tan =  "\\tan" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_csc =  "\\csc" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_sec =  "\\sec" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_cot =  "\\cot" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_arcsin = "\\arcsin" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_arccos = "\\arccos" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_arctan = "\\arctan" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_arccsc = "\\arccsc" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_arcsec = "\\arcsec" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_arccot = "\\arccot" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_sinh = "\\sinh" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_cosh = "\\cosh" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_tanh = "\\tanh" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_arsinh = "\\arsinh" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_arcosh = "\\arcosh" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_artanh = "\\artanh" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
+    func_sqrt = "\\sqrt" (l_paren|l_brace) (expression|variable|number) (r_paren|r_brace) ;
     
     LIM_APPROACH_SYM
         =
@@ -299,16 +298,98 @@
         ;
     
 
-    real 
-        =
-    |scientific
-    |float
-    |integer;
-    
-    scientific = /[0-9]*\.*[0-9]+[eEdD][+-]?[0-9]+/ ;
-    
-    float = /-?[0-9]*.[0-9]+/
+
+number
+    =
+    integer | float_number | IMAG_NUMBER
     ;
-    
-    integer  = /\d+/
+
+integer
+    =
+    decimal_integer | OCT_INTEGER | HEX_INTEGER | BIN_INTEGER
     ;
+
+OCT_INTEGER
+    =
+    '0' /[oO]/ {OCT_DIGIT}+
+    ;
+
+
+decimal_integer
+    =
+    NON_ZERO_DIGIT {DIGIT} | {'0'}+
+    ;
+
+BIN_INTEGER
+    =
+    '0' /[bB]/ {BIN_DIGIT}+
+    ;
+
+OCT_DIGIT
+    =
+    /[0-7]/
+    ;
+
+HEX_INTEGER
+    =
+    '0' /[xX]/ {HEX_DIGIT}+
+    ;
+
+IMAG_NUMBER
+    =
+    (float_number | INT_PART) /[jJ]/
+    ;
+
+float_number
+    =
+    POINT_FLOAT | EXPONENT_FLOAT
+    ;
+
+EXPONENT_FLOAT
+    =
+    (INT_PART | POINT_FLOAT) EXPONENT
+    ;
+
+POINT_FLOAT
+    =
+    [INT_PART] FRACTION | INT_PART '.'
+    ;
+
+FRACTION
+    =
+    '.' {DIGIT}+
+    ;
+
+EXPONENT
+    =
+    /[eE][+-]?/ {DIGIT}+
+    ;
+
+INT_PART
+    =
+    {DIGIT}+
+    ;
+
+
+HEX_DIGIT
+    =
+    /[0-9a-fA-F]/
+    ;
+
+
+BIN_DIGIT
+    =
+    /[01]/
+    ;
+
+    
+NON_ZERO_DIGIT
+    =
+    /[1-9]/
+    ;
+
+DIGIT
+    =
+    /[0-9]/
+    ;
+
