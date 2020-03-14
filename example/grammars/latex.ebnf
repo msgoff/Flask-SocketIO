@@ -1,0 +1,314 @@
+    @@grammar::CALC
+
+
+    start = expression $ ;
+
+    expression
+        =
+        | expression '+' term
+        | expression '-' term
+        | expression cmpop expression
+        | term
+        ;
+   
+    term
+        =
+        | term '*' factor
+        | term '/' factor
+        | factor
+        ;
+
+    factor
+        =
+        | '(' expression ')'
+        | latex 
+        | symbol
+        ;
+    
+    cmpop 
+        = 
+        | Equal
+        | NotEq 
+        | Lt 
+        | LtE 
+        | Gt 
+        | GtE ;
+
+    Equal = '=' ;
+    NotEq =  '!=' ;
+    Lt =  '<' ;
+    LtE =  '<=';
+    Gt =  '>';
+    GtE = '>=' ;
+
+
+    latex 
+        =
+        |func_lim
+        |func_int
+        |func_sum
+        |func_prod
+        |func_log
+        |func_ln
+        |func_sin
+        |func_cos
+        |func_tan
+        |func_csc
+        |func_sec
+        |func_cot
+        |func_arcsin
+        |func_arccos
+        |func_arctan
+        |func_arccsc
+        |func_arcsec
+        |func_arccot
+        |func_sinh
+        |func_cosh
+        |func_tanh
+        |func_arsinh
+        |func_arcosh
+        |func_artanh
+        |func_sqrt
+        
+        | greek_alpha
+        | greek_beta
+        | greek_chi
+        | greek_delta
+        | greek_epsilon
+        | greek_eta
+        | greek_gamma
+        | greek_iota
+        | greek_kappa
+        | greek_lambda
+        | greek_mu
+        | greek_nu
+        | greek_omega
+        | greek_phi
+        | greek_pi
+        | greek_psi
+        | greek_rho
+        | greek_sigma
+        | greek_tau
+        | greek_theta
+        | greek_upsilon
+        | greek_varepsilon
+        | greek_varphi
+        | greek_varrho
+        | greek_vartheta
+        | greek_xi
+        | greek_zeta
+
+        
+        |   accent_hat
+        |   accent_bar
+        |   accent_prime
+        
+        |   cmd_times
+        |   cmd_cdot
+        |   cmd_div
+        |   cmd_frac
+        |   cmd_mathig
+        ;
+        
+        greek_alpha = 
+            | "\\alpha"
+            | "\\alpha"
+            ;
+        greek_beta = 
+            | "\\beta"
+            | "\\beta"
+            ;
+        greek_chi = 
+            | "\\chi" 
+            | "\\chi"
+            ;
+        greek_delta = 
+            | "\\delta"
+            | "\\delta"
+            ;
+       
+        greek_epsilon = 
+            | "\\epsilon" 
+            | "\\varepsilon"
+            ;
+        greek_eta = 
+            | "\\eta" 
+            | "\\eta"
+            ;
+        greek_gamma = 
+            | "\\gamma" 
+            | "\\Gamma"
+            ;
+        
+        greek_iota = 
+            | "\\iota" 
+            | "\\iota"
+            ;
+        greek_kappa = 
+            | "\\kappa"
+            | "\\kappa"
+            ;
+        greek_lambda = 
+            | "\\lambda"
+            | "\\lambda"
+            ;
+  
+        greek_mu = 
+            | "\\mu"
+            | "\\mu"
+            ;
+        greek_nu = 
+            | "\\nu"
+            | "\\nu"
+            ;
+        greek_omega = 
+            | "\\omega"
+            | "\\Omega"
+            ;
+        greek_phi = 
+            | "\\phi"
+            | "\\phi"
+            ;
+        greek_pi = 
+            | "\\pi"
+            | "\\pi"
+            ;
+        greek_psi = 
+            | "\\psi"
+            | "\\Psi"
+            ;
+        greek_rho = 
+            | "\\rho"
+            | "\\rho"
+            ;
+      
+        greek_sigma = 
+            | "\\sigma"
+            | "\\Sigma"
+            ;
+        greek_tau = 
+            | "\\tau"
+            | "\\tau"
+            ;
+        greek_theta = 
+            | "\\theta"
+            | "\\theta"
+            ;
+       
+        greek_upsilon = 
+            | "\\upsilon"
+            | "\\upsilon"
+            ;
+        greek_varepsilon = 
+            | "\\varepsilon"
+            | "\\varepsilon"
+            ;
+        greek_varphi = 
+            | "\\varphi"
+            | "\\varphi"
+            ;
+        greek_varrho = 
+            | "\\varrho"
+            | "\\varrho"
+            ;
+        greek_vartheta = 
+            | "\\vartheta"
+            | "\\vartheta"
+            ;
+        greek_xi = 
+            | "\\xi"
+            | "\\Xi"
+            ;
+      
+        greek_zeta = 
+            | "\\zeta"
+            | "\\zeta"
+            ;
+      
+        cmd_times = '\\times';
+        cmd_cdot =   '\\cdot';
+        cmd_div =    '\\div';
+        cmd_frac =   '\\frac';
+        cmd_mathig =  '\\mathit';
+        
+        accent_hat = "\\hat"
+        ;
+        
+        accent_bar = "\\bar"
+        ;
+        
+        accent_prime = "\\prime"
+        ;
+
+       
+    
+    l_paren = '(';
+    r_paren =  ')';
+    l_brace =  '{';
+    r_brace = '}';
+    l_bracket = '[';
+    r_bracket = ']';
+  
+    symbol 
+        = 
+        | variable
+        | constant
+        ;
+        
+    variable
+        =
+        | 'x'
+        | 'y'
+        | 'z'
+    ;
+    
+    constant = real ;
+    func_lim =  "\\lim" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_int =  "\\int" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_sum =  "\\sum" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_prod = "\\prod" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_log =  "\\log" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_ln =   "\\ln" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_sin =  "\\sin" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_cos =  "\\cos" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_tan =  "\\tan" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_csc =  "\\csc" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_sec =  "\\sec" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_cot =  "\\cot" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_arcsin = "\\arcsin" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_arccos = "\\arccos" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_arctan = "\\arctan" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_arccsc = "\\arccsc" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_arcsec = "\\arcsec" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_arccot = "\\arccot" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_sinh = "\\sinh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_cosh = "\\cosh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_tanh = "\\tanh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_arsinh = "\\arsinh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_arcosh = "\\arcosh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_artanh = "\\artanh" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    func_sqrt = "\\sqrt" (l_paren|l_brace) (expression|variable|constant) (r_paren|r_brace) ;
+    
+    LIM_APPROACH_SYM
+        =
+        |'\\to' 
+        | '\\rightarrow' 
+        | '\\Rightarrow' 
+        | '\\longrightarrow' 
+        | '\\Longrightarrow'
+        ;
+    
+
+    real 
+        =
+    |scientific
+    |float
+    |integer;
+    
+    scientific = /[0-9]*\.*[0-9]+[eEdD][+-]?[0-9]+/ ;
+    
+    float = /-?[0-9]*.[0-9]+/
+    ;
+    
+    integer  = /\d+/
+    ;
